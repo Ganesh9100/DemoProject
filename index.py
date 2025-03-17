@@ -53,9 +53,49 @@ embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM
 # Create Vector Store Index
 index = VectorStoreIndex.from_documents(documents, embed_model=embed_model, vector_store=vector_store)
 
+
+
+
+
     
 # Save FAISS Index
 index.storage_context.persist("faiss_index")
 
+
+
+pip install git+https://github.com/huggingface/transformers@v4.49.0-Gemma-3
+
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model_name = "google/gemma-3-1b-it"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+from transformers import pipeline
+
+# Initialize the text generation pipeline with Gemma 3 1B
+text_generator = pipeline("text-generation", model=model, tokenizer=tokenizer)
+
+# Function to generate responses based on retrieved documents
+def generate_response(query, retrieved_docs):
+    # Combine the query with retrieved documents
+    context = "\n".join([doc.text for doc in retrieved_docs])
+    input_text = f"User: {query}\nContext: {context}\nAssistant:"
+
+    # Generate the response
+    response = text_generator(input_text, max_new_tokens=150)
+    return response[0]['generated_text']
+
+
+# Example user query
+user_query = "What are the benefits of the premium plan?"
+
+# Retrieve relevant documents
+retriever = VectorIndexRetriever(index=index)
+retrieved_documents = retriever.retrieve(user_query)
+
+# Generate response using Gemma 3 1B
+answer = generate_response(user_query, retrieved_documents)
+print(answer)
 
 
