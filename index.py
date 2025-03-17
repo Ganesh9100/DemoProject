@@ -1,11 +1,18 @@
+from llama_index.core import VectorStoreIndex
 import json
-from llama_index import SimpleDirectoryReader, Document, VectorStoreIndex
-from llama_index.vector_stores import FaissVectorStore
-from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.core.schema import Document
+from llama_index.core import SimpleDirectoryReader,ServiceContext,PromptTemplate
 import faiss
+from llama_index.core import VectorStoreIndex, get_response_synthesizer
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
+from llama_index.core.postprocessor import SimilarityPostprocessor
+
+
+
 
 # Load data
-with open("data.json", "r") as f:
+with open("Data.json", "r") as f:
     data = json.load(f)
 
 # Function to create super chunks
@@ -33,29 +40,22 @@ def create_super_chunks(data):
 documents = create_super_chunks(data)
 
 
+from llama_index.core.query_engine import RetrieverQueryEngine
+from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 # Initialize FAISS
-dimension = 1536  # Assuming OpenAI embedding dimension
+dimension = 512  # Assuming OpenAI embedding dimension
 index = faiss.IndexFlatL2(dimension)
 vector_store = FaissVectorStore(faiss_index=index)
 
 # Initialize embedding model
-embed_model = OpenAIEmbedding()
+embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # Create Vector Store Index
 index = VectorStoreIndex.from_documents(documents, embed_model=embed_model, vector_store=vector_store)
 
+    
 # Save FAISS Index
 index.storage_context.persist("faiss_index")
 
 
-from llama_index.query_engine import RetrieverQueryEngine
 
-# Load index
-retriever = index.as_retriever(filters={"Monthly Price": {"<=": 50.0}})  # Example filter for plans below $50
-
-# Query Engine
-query_engine = RetrieverQueryEngine(retriever)
-
-# Test Query
-response = query_engine.query("Show me mobile plans with good 5G speeds under $50")
-print(response)
