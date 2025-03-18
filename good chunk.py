@@ -58,3 +58,30 @@ if __name__ == '__main__':
     query = "Monthly payment plans"
     results = search_faiss(query)
     print("Search Results:", results)
+
+
+
+pip install pandas faiss-cpu sentence-transformers transformers
+
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_name = "google/gemma-3-1b-it"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
+
+def generate_response(query, top_k=5):
+    # Retrieve relevant chunks using FAISS
+    relevant_chunks = search_faiss(query, top_k=top_k)
+    # Combine the retrieved chunks into a single prompt
+    prompt = " ".join([chunk['metadata']['text'] for chunk in relevant_chunks])
+    # Tokenize the prompt
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    # Generate response
+    outputs = model.generate(**inputs, max_new_tokens=50)
+    # Decode and return the generated text
+    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+# Example usage
+query = "What are the details of the monthly payment plan?"
+answer = generate_response(query)
+print(answer)
