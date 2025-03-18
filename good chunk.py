@@ -133,3 +133,47 @@ if __name__ == "__main__":
         print(f"Chunk: {res['chunk']}")
         print(f"Metadata: {res['metadata']}")
         print(f"Distance: {res['distance']}\n")
+
+
+
+
+
+import faiss
+import pickle
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+# Load the index, embeddings, and data
+def load_index(index_path="faiss_index.index", data_path="plan_data.pkl"):
+    index = faiss.read_index(index_path)
+    with open(data_path, "rb") as f:
+        data = pickle.load(f)
+    return index, data
+
+# Encode the query using sentence-transformers
+def encode_query(query, model_name='sentence-transformers/all-MiniLM-L6-v2'):
+    model = SentenceTransformer(model_name)
+    query_vector = model.encode(query)
+    return np.array([query_vector], dtype=np.float32)
+
+# Perform search and return actual chunks
+def search_faiss(query, index, data, top_k=5):
+    query_vector = encode_query(query)
+    distances, indices = index.search(query_vector, top_k)
+
+    results = []
+    for idx, dist in zip(indices[0], distances[0]):
+        if idx != -1:
+            results.append({"chunk": data[idx]['chunk'], "metadata": data[idx].get('metadata', {}), "distance": dist})
+    return results
+
+# Example usage
+if __name__ == "__main__":
+    index, data = load_index()
+    query = "What are the broadband plans available?"
+    results = search_faiss(query, index, data)
+
+    for res in results:
+        print(f"Chunk: {res['chunk']}")
+        print(f"Metadata: {res['metadata']}")
+        print(f"Distance: {res['distance']}\n")
