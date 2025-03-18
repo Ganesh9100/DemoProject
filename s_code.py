@@ -3,6 +3,7 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import json
+import pickle
 
 # Load CSV data
 def load_data(file_path):
@@ -26,19 +27,42 @@ def generate_embeddings(chunks, model_name='sentence-transformers/all-MiniLM-L6-
     embeddings = model.encode(chunks, show_progress_bar=True)
     return np.array(embeddings)
 
-# Create FAISS index
-def create_faiss_index(embeddings,metadata, index_path='updated_faiss_index'):  
+# Create FAISS index and save locally using pickle
+def create_faiss_index(embeddings, metadata, index_path='updated_faiss_index.pkl'):
+    dimension = embeddings.shape[1]
+    index = faiss.IndexFlatL2(dimension)
+    index.add(embeddings)
+    with open(index_path, 'wb') as f:
+        pickle.dump((index, metadata), f)
 
-    
 # Perform search and return actual chunks
-def search_faiss(query, index, data, top_k=3):
+def search_faiss(query, index_path='updated_faiss_index.pkl', model_name='sentence-transformers/all-MiniLM-L6-v2', top_k=3):
+    with open(index_path, 'rb') as f:
+        index, metadata = pickle.load(f)
 
+    model = SentenceTransformer(model_name)
+    query_embedding = model.encode([query])
+    distances, indices = index.search(query_embedding, top_k)
 
-# Load the index, embeddings, and data
-def load_index(index_path="updated_faiss_index", data_path="plan_data.pkl"):
-
+    results = []
+    for i in range(len(indices[0])):
+        result = {
+            'chunk': metadata[indices[0][i]],
+            'distance': distances[0][i]
+        }
+        results.append(result)
+    return results
 
 # if __name__ == '__main__':
 file_path = 'Data.csv'  # Update with your file path
 df = load_data(file_path)
 chunks, metadata = chunk_data(df)
+embeddings = generate_embeddings(chunks)
+create_faiss_index(embeddings, metadata)
+
+print("FAISS index created and saved using pickle!")
+
+# Example search
+query = "monthly payment plan"
+results = search_faiss(query)
+print("Search Results:", results)
