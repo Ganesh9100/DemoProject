@@ -1,0 +1,16 @@
+{
+    "useCase": "convoiq_niq",
+    "contextid": "explain_sql",
+    "preSeed_injection_map": {
+        "{SQL_QUERY}": "SELECT c.13_primary_category, COUNT(DISTINCT ci.ivr_call_id) AS call_count FROM vz-it-pr-fjpv-vzdsdo-0.ds_work_tbls_no_gsam.convoiq_poc_april_data_convoiq_simplified AS CI WHERE LOWER(ci.overall_sentiment) = \"negative\" AND DATE(ci.event_dt) BETWEEN DATE(\"2025-04-01\") AND DATE(\"2025-04-04\") GROUP BY 1 ORDER BY call_count DESC LIMIT 10",
+        "{CONVERSATION_HISTORY}": "",
+        "{ADDITIONAL_INSTRUCTIONS}": "",
+        "{USER_INPUT}": "List top intents for customers whose calls had negative sentiment."
+    },
+    "parameters": {
+        "temperature": 0.1,
+        "maxOutputTokens": 8192,
+        "topP": 1,
+        "topk": 1
+    }
+}
