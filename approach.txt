@@ -5,3 +5,7 @@ Designed a modular agentic GenAI architecture using a planner–executor framewo
 ✅ Project 2 — Approach (One-Sentence Version)
 
 Implemented a plug-and-play MCP-based guardrail middleware that externally validates both leadership-added prompts and Gemini-generated summaries through stateless, containerized validation services to ensure compliance, prevent sensitive data leakage, and maintain enterprise AI governance without modifying core LLM workflows.
+
+business pro
+
+Addressed a critical compliance and data-security gap in a leadership call-summarization dashboard by preventing unvalidated dynamic instructions and AI-generated summaries from causing sensitive telecom data leakage, policy violations, and hallucination risks.
