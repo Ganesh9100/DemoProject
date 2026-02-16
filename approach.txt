@@ -8,4 +8,4 @@ Implemented a plug-and-play MCP-based guardrail middleware that externally valid
 
 business pro
 
-Addressed a critical compliance and data-security gap in a leadership call-summarization dashboard by preventing unvalidated dynamic instructions and AI-generated summaries from causing sensitive telecom data leakage, policy violations, and hallucination risks.
+Designed and integrated a stateless MCP-based guardrail middleware that acts as an external validation layer to dynamically verify leadership-added instructions before prompt augmentation and to validate Gemini-generated summaries for compliance, sensitive data leakage, and hallucinations, while deploying it as a containerized microservice on AWS App Runner for independent scalability without modifying existing LLM workflows.
