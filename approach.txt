@@ -1,0 +1,7 @@
+Project 1 — Approach (One-Sentence Version)
+
+Designed a modular agentic GenAI architecture using a planner–executor framework where LLaMA-3.2 dynamically selects among multiple tools including direct text retrieval, NL-to-SQL querying with DuckDB for structured data, and hierarchical RAG with MiniLM embeddings and FAISS for semantic retrieval, while Gemma-3 aggregates multi-source factual context to generate accurate final responses.
+
+✅ Project 2 — Approach (One-Sentence Version)
+
+Implemented a plug-and-play MCP-based guardrail middleware that externally validates both leadership-added prompts and Gemini-generated summaries through stateless, containerized validation services to ensure compliance, prevent sensitive data leakage, and maintain enterprise AI governance without modifying core LLM workflows.
