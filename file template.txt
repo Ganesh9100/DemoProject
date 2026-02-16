@@ -1,0 +1,191 @@
+PROJECT 1 — Multi-Tool Agentic RAG System
+Business Problem Solved:
+
+Built an agentic GenAI system to answer telecom plan queries from multiple heterogeneous data sources (static text, structured tables, policy documents) by dynamically selecting tools, aggregating context, and generating accurate responses.
+
+Domain: Telecom Plan Intelligence & Customer Support Automation
+
+Approach:
+
+Designed a planner-based multi-tool agent architecture using:
+
+Planner Agent: Uses LLaMA-3.2 to analyze user intent and select appropriate tools.
+
+Final Response Agent: Uses Gemma-3 to synthesize final answer.
+
+Semantic Retrieval: MiniLM embeddings for similarity search.
+
+Vector Search: FAISS for chunk retrieval.
+
+Structured Querying: DuckDB for SQL-based data filtering.
+
+Tool Architecture:
+
+Tool 1 & 2 — Static Text Retrieval
+
+Directly fetch telecom plan details from text files.
+
+No embeddings or SQL required.
+
+Tool 3 — Structured Plan Database (SQL-based Retrieval)
+
+Flow:
+
+User Question
+↓
+LLM generates SQL
+↓
+SQL executed via DuckDB
+↓
+Filtered table → converted to text using LLM
+↓
+Final user-friendly response
+
+👉 No embeddings used for structured data — purely NL → SQL → Table → Text.
+
+Tool 4 — Hierarchical RAG Retrieval
+
+Flow:
+
+Query
+↓
+URL Selection using embeddings
+↓
+Chunk Retrieval via FAISS
+
+First selects relevant webpage.
+
+Then retrieves most relevant chunks only.
+
+Overall Agent Flow:
+
+User Query
+↓
+Planner Agent (Tool Selection)
+↓
+Selected Tools Execute
+↓
+Context Aggregation
+↓
+Final Response Agent
+↓
+User Answer
+
+Why This Approach:
+
+Enables dynamic tool orchestration
+
+Avoids unnecessary RAG when structured SQL works better
+
+Reduces hallucination via factual context aggregation
+
+Improves accuracy and scalability across multiple data formats
+
+Deployment:
+
+On-premise deployment with modular microservices
+
+FAISS vector store for efficient retrieval
+
+DuckDB embedded analytical database
+
+Containerized inference pipelines
+
+Outcome:
+
+Improved response accuracy by combining multi-source context
+
+Reduced hallucinations through tool-grounded reasoning
+
+Enabled scalable telecom knowledge querying system
+
+Tools Used:
+
+Python, LLaMA-3.2, Gemma-3, MiniLM, FAISS, DuckDB, RAG Architecture, Agentic AI, Multi-Tool Orchestration, NL-to-SQL, Context Aggregation
+
+✅ PROJECT 2 — MCP Guardrail Middleware for Leadership Summarization System
+Business Problem Solved:
+
+Leadership dashboard generated telecom call summaries using Gemini model with dynamic business instructions.
+
+Major risk identified:
+
+No validation for leadership-added prompts
+
+No validation for generated summaries
+
+Potential sensitive data leakage & compliance risks
+
+Solution: Implemented MCP-based guardrail middleware without modifying core LLM logic.
+
+Approach:
+
+Introduced Model Context Protocol (MCP) as a plug-and-play guardrail layer.
+
+MCP Exposed Two Validation Tools:
+
+Tool 1 — Prompt Validation Tool
+
+Validates leadership-added instructions
+
+Ensures compliance and policy safety before appending to default prompt
+
+Tool 2 — Response Validation Tool
+
+Validates generated summaries for:
+
+Sensitive data leakage
+
+Hallucinations
+
+Policy violations
+
+System Flow:
+
+Leadership Instructions
+↓
+MCP Prompt Validation Tool
+↓
+Validated Prompt sent to LLM
+↓
+Gemini generates summary
+↓
+MCP Response Validation Tool
+↓
+Safe Leadership Dashboard Output
+
+Why This Approach:
+
+No changes to existing LLM pipelines
+
+External plug-and-play guardrail system
+
+Independent scalability
+
+Maintains business flexibility while ensuring compliance
+
+Deployment:
+
+Stateless MCP microservice
+
+Containerized using Docker
+
+Pushed to Amazon ECR
+
+Deployed on AWS App Runner
+
+Scales independently from LLM system
+
+Outcome:
+
+Closed major compliance loopholes
+
+Prevented sensitive telecom data exposure
+
+Enabled safe dynamic prompt customization
+
+Improved enterprise governance of AI outputs
+
+Tools Used:
+
+MCP (Model Context Protocol), Gemini LLM, AWS App Runner, Amazon ECR, Docker, Prompt Validation, Response Guardrails, Enterprise AI Compliance
